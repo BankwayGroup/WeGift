@@ -7,15 +7,15 @@ on:
     branches: [ "main" ]
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4
+
     - name: Set tag for Docker image
       id: tag
-      run: echo "::set-output name=tag::my-image-name-$(date +%s)"
+      run: echo "IMAGE_TAG=my-image-name-$(date +%s)" >> $GITHUB_ENV
+
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag ${{ steps.tag.outputs.tag }}
+      run: docker build . --file Dockerfile --tag $IMAGE_TAG
