@@ -1,22 +1,34 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import me.y9san9.deploy.Deploy
-import me.y9san9.deploy.DeployConfiguration
-import me.y9san9.deploy.ssh
 import org.jetbrains.kotlin.konan.properties.loadProperties
-
+import org.gradle.api.tasks.CopySpec
+import org.gradle.api.tasks.bundling.Jar
+import org.gradle.api.tasks.bundling.DuplicatesStrategy
 
 plugins {
-    kotlin(plugin.jvm) version Version.KOTLIN
-    kotlin(plugin.serialization) version Version.SERIALIZATION_PLUGIN
+    kotlin("jvm") version "1.5.31"
+    kotlin("plugin.serialization") version "1.5.31"
 }
+
+val Version = object {
+    const val KOTLIN = "1.5.31"
+    const val JVM = "1.8"
+    const val SERIALIZATION_PLUGIN = "1.5.31"
+}
+
+val AppInfo = object {
+    const val PACKAGE = "me.y9san9.prizebot"
+    const val VERSION = "1.0"
+}
+
+val utils = "me.y9san9.prizebot:utils:1.0"
+val bot = "me.y9san9.prizebot:bot:1.0"
+val coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
 
 group = AppInfo.PACKAGE
 version = AppInfo.VERSION
 
-allprojects {
-    repositories {
-        mavenCentral()
-    }
+repositories {
+    mavenCentral()
 }
 
 dependencies {
@@ -25,19 +37,17 @@ dependencies {
     implementation(coroutines)
 }
 
-allprojects {
-    tasks.withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = Version.JVM
-    }
+tasks.withType<KotlinCompile> {
+    kotlinOptions.jvmTarget = Version.JVM
 }
 
 val deployPropertiesFile = file("deploy.properties")
 
-if(deployPropertiesFile.exists()) {
+if (deployPropertiesFile.exists()) {
     val properties = loadProperties(deployPropertiesFile.absolutePath)
 
-    project.apply<Deploy>()
-    project.configure<DeployConfiguration> {
+    apply<me.y9san9.deploy.Deploy>()
+    configure<me.y9san9.deploy.DeployConfiguration> {
         serviceName = "prizebot"
         implementationTitle = "prizebot"
         mainClassName = "me.y9san9.prizebot.MainKt"
@@ -45,24 +55,20 @@ if(deployPropertiesFile.exists()) {
         user = properties.getProperty("user")
         password = properties.getProperty("password")
         deployPath = properties.getProperty("deployPath")
-        // On linux should be something like /home/user/.ssh/known_hosts
-        // Or Default Allow Any Hosts if this value is not specified,
-        // But then MITM may be performed
         knownHostsFile = properties.getProperty("knownHosts")
     }
 
-    task("stop") {
+    tasks.register("stop") {
         group = "deploy"
-
         doLast {
-            project.ssh {
-                execute("systemctl stop ${project.the<DeployConfiguration>().serviceName}")
+            ssh {
+                execute("systemctl stop ${project.the<me.y9san9.deploy.DeployConfiguration>().serviceName}")
             }
         }
     }
 }
 
-val fatJar by tasks.creating(Jar::class.java) {
+tasks.register<Jar>("fatJar") {
     dependsOn("build")
 
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
@@ -74,11 +80,8 @@ val fatJar by tasks.creating(Jar::class.java) {
         attributes["Main-Class"] = "me.y9san9.prizebot.MainKt"
     }
 
-    from (
-        project.configurations
-            .getByName("runtimeClasspath")
-            .map { if(it.isDirectory) it else zipTree(it) }
+    from(
+        configurations.getByName("runtimeClasspath")
+            .map { if (it.isDirectory) it else zipTree(it) }
     )
-
-    with(project.tasks.getByName("jar") as CopySpec)
 }
