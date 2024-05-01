@@ -37,5 +37,5 @@ This software is absolutely free and using [MIT](https://github.com/BankwayGroup
 ## Brought to you by
 
 <a href="https://github.com/bankwaygroup">
-  <img src="https://contributors-img.web.app/image?repo=y9san9/prizebot" alt="Contributors"/>
+  <img src="https://telegra.ph/file/65635d544d5144368b292.jpg" alt="Contributors"/>
 </a>
