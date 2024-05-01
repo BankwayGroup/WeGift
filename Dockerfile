@@ -10,8 +10,8 @@ COPY . .
 # Make Gradle wrapper executable
 RUN chmod +x ./gradlew
 
-# Install the necessary tools (JDK) if needed
-# RUN apk --no-cache add openjdk8
+# Install the OpenJDK development package
+RUN apk add --no-cache openjdk8-jdk
 
 # Run Gradle build to generate the fat JAR
 RUN ./gradlew build
