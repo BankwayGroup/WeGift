@@ -1,11 +1,8 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import me.y9san9.deploy.Deploy
 import me.y9san9.deploy.DeployConfiguration
 import me.y9san9.deploy.ssh
 import org.jetbrains.kotlin.konan.properties.loadProperties
-import org.gradle.api.tasks.CopySpec
 import org.gradle.jvm.tasks.Jar
-import org.gradle.api.tasks.DuplicatesStrategy
 
 plugins {
     kotlin("jvm") version "1.5.21"
@@ -29,7 +26,7 @@ dependencies {
     implementation(coroutines)
 }
 
-tasks.withType<KotlinCompile> {
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
 }
 
@@ -68,7 +65,7 @@ tasks.register("stage") {
 val fatJar by tasks.creating(Jar::class) {
     dependsOn("build")
 
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    // Removed duplicatesStrategy as it's not necessary
     group = "build"
     archiveFileName.set("app.jar")
 
