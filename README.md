@@ -32,10 +32,10 @@ I made a nice [note](docs/ONBOARDING.md) about onboarding on this project. This 
 There is a huge plans to do the most convenient prize raffling in the universe via this bot. Some of this accumulated [there](https://github.com/y9san9/prizebot/milestone/1)
 
 ## 📖 Licence
-This software is absolutely free and using [MIT](https://github.com/y9san9/prizebot/blob/master/LICENCE) licence
+This software is absolutely free and using [MIT](https://github.com/BankwayGroup/wegift/blob/main/LICENSE) licence
 
 ## Brought to you by
 
-<a href="https://github.com/y9san9/prizebot/graphs/contributors">
+<a href="https://github.com/bankwaygroup">
   <img src="https://contributors-img.web.app/image?repo=y9san9/prizebot" alt="Contributors"/>
 </a>
