@@ -15,6 +15,9 @@ RUN apk add --no-cache openjdk8
 # Run Gradle build to generate the fat JAR
 RUN ./gradlew build
 
+# Check if the JAR file exists
+RUN ls -l build/libs
+
 # Copy the generated JAR to the container
 COPY build/libs/app.jar /app.jar
 
