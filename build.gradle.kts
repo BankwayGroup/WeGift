@@ -3,20 +3,24 @@ import me.y9san9.deploy.Deploy
 import me.y9san9.deploy.DeployConfiguration
 import me.y9san9.deploy.ssh
 import org.jetbrains.kotlin.konan.properties.loadProperties
-
+import org.gradle.api.tasks.CopySpec
+import org.gradle.jvm.tasks.Jar
+import org.gradle.api.tasks.DuplicatesStrategy
 
 plugins {
-    kotlin(plugin.jvm) version Version.KOTLIN
-    kotlin(plugin.serialization) version Version.SERIALIZATION_PLUGIN
+    kotlin("jvm") version "1.5.21"
+    kotlin("plugin.serialization") version "1.5.21"
 }
 
-group = AppInfo.PACKAGE
-version = AppInfo.VERSION
+val utils = "your:utils:version"
+val bot = "your:bot:version"
+val coroutines = "your:coroutines:version"
 
-allprojects {
-    repositories {
-        mavenCentral()
-    }
+group = "your.group"
+version = "your.version"
+
+repositories {
+    mavenCentral()
 }
 
 dependencies {
@@ -25,15 +29,13 @@ dependencies {
     implementation(coroutines)
 }
 
-allprojects {
-    tasks.withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = Version.JVM
-    }
+tasks.withType<KotlinCompile> {
+    kotlinOptions.jvmTarget = "1.8"
 }
 
 val deployPropertiesFile = file("deploy.properties")
 
-if(deployPropertiesFile.exists()) {
+if (deployPropertiesFile.exists()) {
     val properties = loadProperties(deployPropertiesFile.absolutePath)
 
     project.apply<Deploy>()
@@ -45,9 +47,6 @@ if(deployPropertiesFile.exists()) {
         user = properties.getProperty("user")
         password = properties.getProperty("password")
         deployPath = properties.getProperty("deployPath")
-        // On linux should be something like /home/user/.ssh/known_hosts
-        // Or Default Allow Any Hosts if this value is not specified,
-        // But then MITM may be performed
         knownHostsFile = properties.getProperty("knownHosts")
     }
 
@@ -62,7 +61,11 @@ if(deployPropertiesFile.exists()) {
     }
 }
 
-val fatJar by tasks.creating(Jar::class.java) {
+tasks.register("stage") {
+    dependsOn("build")
+}
+
+val fatJar by tasks.creating(Jar::class) {
     dependsOn("build")
 
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
@@ -74,11 +77,8 @@ val fatJar by tasks.creating(Jar::class.java) {
         attributes["Main-Class"] = "me.y9san9.prizebot.MainKt"
     }
 
-    from (
-        project.configurations
-            .getByName("runtimeClasspath")
-            .map { if(it.isDirectory) it else zipTree(it) }
+    from(
+        project.configurations.getByName("runtimeClasspath")
+            .map { if (it.isDirectory) it else zipTree(it) }
     )
-
-    with(project.tasks.getByName("jar") as CopySpec)
 }
