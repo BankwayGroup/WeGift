@@ -14,5 +14,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: Set tag for Docker image
+      id: tag
+      run: echo "::set-output name=tag::my-image-name-$(date +%s)"
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+      run: docker build . --file Dockerfile --tag ${{ steps.tag.outputs.tag }}
