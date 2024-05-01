@@ -1,23 +1,22 @@
 # Use Alpine version of OpenJDK 8
-FROM openjdk:8-jre-alpine
+FROM openjdk:8-jre-alpine3.9
 
-# Set the working directory
 WORKDIR /app
 
-# Copy the project files into the container
+# Copy project files
 COPY . .
 
 # Make Gradle wrapper executable
 RUN chmod +x ./gradlew
 
-# Install the OpenJDK development package
-RUN apk add --no-cache openjdk8-jdk
+# Install OpenJDK 8
+RUN apk add --no-cache openjdk8
 
 # Run Gradle build to generate the fat JAR
 RUN ./gradlew build
 
 # Copy the generated JAR to the container
-COPY build/libs/*.jar /app/app.jar
+COPY build/libs/app.jar /app.jar
 
-# Command to run the application
-CMD ["java", "-jar", "/app/app.jar"]
+# Run the application
+CMD ["java", "-jar", "/app.jar"]
