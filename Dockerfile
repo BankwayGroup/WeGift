@@ -7,8 +7,12 @@ WORKDIR /app
 # Copy the project files
 COPY . .
 
+# Change permissions to make the gradlew script executable
+RUN chmod +x ./gradlew
+
 # Build the fat JAR
 RUN ./gradlew fatJar
 
 # Default command to run the fat JAR
 CMD ["java", "-jar", "build/libs/app.jar"]
+
