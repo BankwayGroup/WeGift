@@ -11,7 +11,7 @@ plugins {
 
 val utils = "your:utils:version"
 val bot = "your:bot:version"
-val coroutines = "your:coroutines:version"
+val coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
 
 group = "your.group"
 version = "your.version"
@@ -25,6 +25,7 @@ dependencies {
     implementation(bot)
     implementation(coroutines)
 }
+
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
